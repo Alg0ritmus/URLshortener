@@ -1,1 +1,1 @@
-web gunicorn whereismymoney.wsgi:application --log-file -
+web gunicorn URLshortener.wsgi:application --log-file -
