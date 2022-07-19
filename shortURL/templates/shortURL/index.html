@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static '/shortURL/style.css' %}">
+    <title>URLshortener</title>
+</head>
+<body>
+    <div class="form-box">
+        <h2 class="title">Url shortener</h2>
+        <form action="{% url 'shortURL:post_url' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="longurl" class ="longurl" placeholder="Type url address..." value="{{longurl}}">
+            <input type="button" value="go!" onclick="sendAJAX()">
+        </form><br>
+        <div class="short-output">
+            <h1>Short Url:</h1><a class="shorturl"></a>
+        </div>
+        
+    </div>
+    
+</body>
+<script>
+
+let getCookie = (cname) => {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+}
+
+
+
+let sendAJAX = () => {
+    var token = getCookie("csrftoken");
+    var longurl_ = document.getElementsByClassName("longurl")[0].value;
+    var shorturl_print = document.getElementsByClassName("shorturl")[0];
+    console.log("1",shorturl_print);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/post/", true);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            var jsonData=JSON.parse(xhr.response);
+            shorturl_print.textContent=window.location+"api/get/"+jsonData.shorturl_;
+            shorturl_print.href=window.location+"api/get/"+jsonData.shorturl_;
+
+        }
+
+    }
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader("X-CSRFToken", token);
+    xhr.send(JSON.stringify({
+        longurl: longurl_
+    }));
+    
+}
+</script>
+</html>
+

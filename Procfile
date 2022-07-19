@@ -1,0 +1,1 @@
+web gunicorn whereismymoney.wsgi:application --log-file -
